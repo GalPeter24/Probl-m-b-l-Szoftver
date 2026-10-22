@@ -1,0 +1,3 @@
+# nev|datum|kezdes|befejezes|helyszin|eszkozok
+Minta foglalás|2026-11-20|14:00|15:00|Tornaterem - 1. fél|Pingpongütő és labda
+Minta csapat|2026-11-21|16:00|17:30|Focipálya|Saját eszközt hoz

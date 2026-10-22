@@ -1,0 +1,54 @@
+<Window x:Class="SportFoglalasok.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Sportlétesítmény-foglalások" Height="560" Width="980"
+        MinHeight="420" MinWidth="720"
+        WindowStartupLocation="CenterScreen"
+        Background="#F4F6FA">
+    <Grid Margin="28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="Sportlétesítmény-foglalások" FontSize="26" FontWeight="SemiBold" Foreground="#172033" />
+            <TextBlock Text="Foglalási adatok betöltése és áttekintése" Margin="0,5,0,0" FontSize="14" Foreground="#657089" />
+        </StackPanel>
+
+        <Border Grid.Row="1" Padding="16" Margin="0,0,0,16" Background="White" CornerRadius="8" BorderBrush="#E2E7F0" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Adatfájl" FontWeight="SemiBold" Foreground="#172033" />
+                    <TextBlock Text="Válaszd ki a foglalásokat tartalmazó JSON-fájlt." Margin="0,4,0,0" FontSize="12" Foreground="#657089" />
+                </StackPanel>
+                <TextBlock x:Name="FilePathText" Grid.Column="1" VerticalAlignment="Center" Text="Nincs kiválasztott fájl" TextTrimming="CharacterEllipsis" Foreground="#657089" Margin="0,0,16,0" />
+                <Button Grid.Column="2" Content="Fájl kiválasztása" Padding="16,9" Click="SelectFileButton_Click" />
+            </Grid>
+        </Border>
+
+        <DataGrid x:Name="BookingsGrid" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True"
+                  CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single"
+                  HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                  Background="White" BorderBrush="#E2E7F0" RowBackground="White"
+                  AlternatingRowBackground="#F8FAFD" Padding="4">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Név" Binding="{Binding Nev}" Width="1.3*" />
+                <DataGridTextColumn Header="Dátum" Binding="{Binding Datum, StringFormat={}{0:yyyy. MM. dd.}}" Width="1.1*" />
+                <DataGridTextColumn Header="Kezdés" Binding="{Binding Kezdes}" Width="0.7*" />
+                <DataGridTextColumn Header="Befejezés" Binding="{Binding Befejezes}" Width="0.8*" />
+                <DataGridTextColumn Header="Helyszín" Binding="{Binding Helyszin}" Width="1.4*" />
+                <DataGridTextColumn Header="Eszközök" Binding="{Binding Eszkozok}" Width="1.5*" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <TextBlock x:Name="StatusText" Grid.Row="3" Margin="2,12,0,0" Text="Válassz ki egy adatfájlt a foglalások betöltéséhez." Foreground="#657089" />
+    </Grid>
+</Window>
