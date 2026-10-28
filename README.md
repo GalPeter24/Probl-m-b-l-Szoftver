@@ -1,6 +1,6 @@
 # Sportlétesítmény-foglalások
 
-Első WPF-prototípus a sportlétesítmények foglalásainak beolvasására és listázására.
+WPF-prototípus a sportlétesítmények foglalásainak beolvasására, felvételére és listázására.
 
 ## Indítás
 
@@ -21,4 +21,4 @@ A kiválasztott fájl sima szövegfájl. Minden foglalás egy külön sor, a mez
 Minta foglalás|2026-11-20|14:00|15:00|Tornaterem - 1. fél|Pingpongütő és labda
 ```
 
-Nem létező vagy üres fájl kiválasztásakor üres foglaláslista jelenik meg. Ez a prototípus jelenleg beolvassa és listázza az adatokat; a foglalásfelvétel és a fájlba mentés későbbi lépés.
+Nem létező vagy üres fájl kiválasztásakor üres foglaláslista jelenik meg. Új foglalás a kiválasztott fájl végére kerül. A program ellenőrzi a kötelező adatokat, az időtartamot és a helyszínütközést; a teljes tornaterem mindkét felet lefoglalja. A sporteszközök elérhetőségét nem ellenőrzi.
