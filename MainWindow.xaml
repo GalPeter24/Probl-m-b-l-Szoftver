@@ -12,6 +12,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Margin="0,0,0,18">
@@ -38,6 +39,7 @@
         <Border Grid.Row="2" Padding="16" Margin="0,0,0,14" Background="White" CornerRadius="8" BorderBrush="#E2E7F0" BorderThickness="1">
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -89,17 +91,14 @@
                         <ComboBoxItem Content="Eszközt kérek" />
                     </ComboBox>
                 </StackPanel>
-                <Grid Grid.Row="2" Grid.Column="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                        <TextBlock Text="Kért eszközök" Margin="0,0,0,5" Foreground="#46516A" />
-                        <TextBox x:Name="EquipmentTextBox" Height="34" Padding="8,5" IsEnabled="False" ToolTip="Például: pingpongütő és labda" />
-                    </StackPanel>
-                    <Button Grid.Column="1" Content="Foglalás hozzáadása" VerticalAlignment="Bottom" Padding="16,9" Click="AddBookingButton_Click" />
-                </Grid>
+                <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,0">
+                    <TextBlock Text="Kért eszközök" Margin="0,0,0,5" Foreground="#46516A" />
+                    <TextBox x:Name="EquipmentTextBox" Height="34" Padding="8,5" IsEnabled="False" ToolTip="Például: pingpongütő és labda" />
+                </StackPanel>
+                <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                    <Button x:Name="AddBookingButton" Content="Foglalás hozzáadása" Padding="16,9" Click="AddBookingButton_Click" />
+                    <Button x:Name="CancelEditButton" Content="Mégse" Padding="16,9" Margin="8,0,0,0" Visibility="Collapsed" Click="CancelEditButton_Click" />
+                </StackPanel>
             </Grid>
         </Border>
 
@@ -118,6 +117,10 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <TextBlock x:Name="StatusText" Grid.Row="4" Margin="2,10,0,0" Text="Válassz ki egy adatfájlt a foglalások betöltéséhez." Foreground="#657089" />
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Kijelölt módosítása" Padding="14,8" Margin="0,0,8,0" Click="EditSelectedButton_Click" />
+            <Button Content="Kijelölt lemondása / törlése" Padding="14,8" Click="DeleteSelectedButton_Click" />
+        </StackPanel>
+        <TextBlock x:Name="StatusText" Grid.Row="5" Margin="2,10,0,0" Text="Válassz ki egy adatfájlt a foglalások betöltéséhez." Foreground="#657089" />
     </Grid>
 </Window>

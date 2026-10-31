@@ -21,4 +21,4 @@ A kiválasztott fájl sima szövegfájl. Minden foglalás egy külön sor, a mez
 Minta foglalás|2026-11-20|14:00|15:00|Tornaterem - 1. fél|Pingpongütő és labda
 ```
 
-Nem létező vagy üres fájl kiválasztásakor üres foglaláslista jelenik meg. Új foglalás a kiválasztott fájl végére kerül. A program ellenőrzi a kötelező adatokat, az időtartamot és a helyszínütközést; a teljes tornaterem mindkét felet lefoglalja. A sporteszközök elérhetőségét nem ellenőrzi.
+Nem létező vagy üres fájl kiválasztásakor üres foglaláslista jelenik meg. A foglalás űrlap kitöltésével új foglalás vehető fel. A táblázatban kijelölt foglalás módosítható vagy megerősítés után törölhető; a változások azonnal mentődnek a TXT-fájlba. A program ellenőrzi a kötelező adatokat, az időtartamot és a helyszínütközést; a teljes tornaterem mindkét felet lefoglalja. A sporteszközök elérhetőségét nem ellenőrzi.

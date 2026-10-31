@@ -12,6 +12,7 @@ public partial class MainWindow : Window
     private const string FileHeader = "# nev|datum|kezdes|befejezes|helyszin|eszkozok";
     private List<Foglalas> _bookings = [];
     private string? _filePath;
+    private Foglalas? _editingBooking;
 
     public MainWindow()
     {
@@ -43,6 +44,8 @@ public partial class MainWindow : Window
             var bookings = LoadBookings(dialog.FileName);
             _filePath = dialog.FileName;
             _bookings = bookings;
+            _editingBooking = null;
+            ClearForm();
             FilePathText.Text = dialog.FileName;
             FilePathText.ToolTip = dialog.FileName;
             BookingsGrid.ItemsSource = _bookings;
@@ -148,7 +151,7 @@ public partial class MainWindow : Window
             Eszkozok = equipment
         };
 
-        var collision = _bookings.FirstOrDefault(existing => Conflicts(existing, booking));
+        var collision = _bookings.FirstOrDefault(existing => !ReferenceEquals(existing, _editingBooking) && Conflicts(existing, booking));
         if (collision is not null)
         {
             ShowError(
@@ -159,15 +162,97 @@ public partial class MainWindow : Window
 
         try
         {
-            AppendBooking(_filePath, booking);
-            _bookings.Add(booking);
-            BookingsGrid.Items.Refresh();
+            var updatedBookings = _editingBooking is null
+                ? [.. _bookings, booking]
+                : _bookings.Select(existing => ReferenceEquals(existing, _editingBooking) ? booking : existing).ToList();
+
+            WriteBookings(_filePath, updatedBookings);
+            _bookings = updatedBookings;
+            BookingsGrid.ItemsSource = _bookings;
+            _editingBooking = null;
             StatusText.Text = $"A foglalás mentve. Összesen {_bookings.Count} foglalás.";
             ClearForm();
         }
         catch (IOException ex)
         {
             ShowError($"A foglalás mentése nem sikerült:\n{ex.Message}", "Fájlírási hiba");
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            ShowError($"A fájl nem írható:\n{ex.Message}", "Hozzáférési hiba");
+        }
+    }
+
+    private void EditSelectedButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (BookingsGrid.SelectedItem is not Foglalas selected)
+        {
+            ShowError("Előbb válassz ki egy foglalást a listából.", "Nincs kijelölt foglalás");
+            return;
+        }
+
+        _editingBooking = selected;
+        NameTextBox.Text = selected.Nev;
+        BookingDatePicker.SelectedDate = selected.Datum;
+        StartTimeTextBox.Text = selected.Kezdes;
+        EndTimeTextBox.Text = selected.Befejezes;
+        LocationComboBox.SelectedItem = LocationComboBox.Items
+            .Cast<ComboBoxItem>()
+            .FirstOrDefault(item => string.Equals(item.Content?.ToString(), selected.Helyszin, StringComparison.Ordinal));
+
+        var bringsOwnEquipment = string.Equals(selected.Eszkozok, "Saját eszközt hoz", StringComparison.OrdinalIgnoreCase);
+        EquipmentOptionComboBox.SelectedIndex = bringsOwnEquipment ? 0 : 1;
+        EquipmentTextBox.Text = bringsOwnEquipment ? string.Empty : selected.Eszkozok;
+        AddBookingButton.Content = "Módosítás mentése";
+        CancelEditButton.Visibility = Visibility.Visible;
+        StatusText.Text = $"Szerkesztés alatt: {selected.Nev} – {selected.Helyszin}.";
+        NameTextBox.Focus();
+    }
+
+    private void CancelEditButton_Click(object sender, RoutedEventArgs e)
+    {
+        _editingBooking = null;
+        ClearForm();
+        StatusText.Text = "A módosítás megszakítva.";
+    }
+
+    private void DeleteSelectedButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(_filePath))
+        {
+            ShowError("Előbb válassz ki egy TXT-adatfájlt.", "Nincs adatfájl");
+            return;
+        }
+
+        if (BookingsGrid.SelectedItem is not Foglalas selected)
+        {
+            ShowError("Előbb válassz ki egy foglalást a listából.", "Nincs kijelölt foglalás");
+            return;
+        }
+
+        var result = MessageBox.Show(
+            this,
+            $"Biztosan lemondod és törlöd ezt a foglalást?\n\n{selected.Nev} – {selected.Helyszin}, {selected.Datum:yyyy. MM. dd.} {selected.Kezdes}-{selected.Befejezes}",
+            "Foglalás törlése",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+
+        if (result != MessageBoxResult.Yes)
+            return;
+
+        var updatedBookings = _bookings.Where(booking => !ReferenceEquals(booking, selected)).ToList();
+        try
+        {
+            WriteBookings(_filePath, updatedBookings);
+            _bookings = updatedBookings;
+            BookingsGrid.ItemsSource = _bookings;
+            _editingBooking = null;
+            ClearForm();
+            StatusText.Text = $"A foglalás törölve. Összesen {_bookings.Count} foglalás maradt.";
+        }
+        catch (IOException ex)
+        {
+            ShowError($"A foglalás törlése nem sikerült:\n{ex.Message}", "Fájlírási hiba");
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -211,29 +296,29 @@ public partial class MainWindow : Window
         return bookings;
     }
 
-    private static void AppendBooking(string filePath, Foglalas booking)
+    private static void WriteBookings(string filePath, List<Foglalas> bookings)
     {
-        var existingText = File.Exists(filePath) ? File.ReadAllText(filePath) : string.Empty;
-        var line = string.Join("|",
+        var lines = new List<string> { FileHeader };
+        lines.AddRange(bookings.Select(booking => string.Join("|",
             booking.Nev,
             booking.Datum.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
             booking.Kezdes,
             booking.Befejezes,
             booking.Helyszin,
-            booking.Eszkozok);
+            booking.Eszkozok)));
 
-        string textToAppend;
-        if (string.IsNullOrWhiteSpace(existingText))
+        var temporaryPath = filePath + ".tmp";
+        try
         {
-            textToAppend = FileHeader + Environment.NewLine + line + Environment.NewLine;
+            File.WriteAllText(temporaryPath, string.Join(Environment.NewLine, lines) + Environment.NewLine,
+                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+            File.Move(temporaryPath, filePath, overwrite: true);
         }
-        else
+        finally
         {
-            var separator = existingText.EndsWith('\n') || existingText.EndsWith('\r') ? string.Empty : Environment.NewLine;
-            textToAppend = separator + line + Environment.NewLine;
+            if (File.Exists(temporaryPath))
+                File.Delete(temporaryPath);
         }
-
-        File.AppendAllText(filePath, textToAppend, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
     private static bool Conflicts(Foglalas existing, Foglalas candidate)
@@ -272,6 +357,8 @@ public partial class MainWindow : Window
         EquipmentTextBox.Clear();
         EquipmentOptionComboBox.SelectedIndex = 0;
         BookingDatePicker.SelectedDate = DateTime.Today;
+        AddBookingButton.Content = "Foglalás hozzáadása";
+        CancelEditButton.Visibility = Visibility.Collapsed;
         NameTextBox.Focus();
     }
 
