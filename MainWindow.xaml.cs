@@ -278,9 +278,11 @@ public partial class MainWindow : Window
             if (!DateTime.TryParseExact(fields[1].Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
                 throw new InvalidDataException($"Nem értelmezhető dátum: {fields[1]}");
 
-            if (!TimeOnly.TryParseExact(fields[2].Trim(), "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out _)
-                || !TimeOnly.TryParseExact(fields[3].Trim(), "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+            if (!TimeOnly.TryParseExact(fields[2].Trim(), "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var start)
+                || !TimeOnly.TryParseExact(fields[3].Trim(), "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var end))
                 throw new InvalidDataException($"Nem értelmezhető időpont a sorban: {line}");
+            if (end <= start)
+                throw new InvalidDataException($"A befejezés nem későbbi a kezdésnél ebben a sorban: {line}");
 
             bookings.Add(new Foglalas
             {
@@ -341,12 +343,23 @@ public partial class MainWindow : Window
         const string secondHalf = "Tornaterem - 2. fél";
         const string fullGym = "Tornaterem - teljes terem";
 
-        if (first == fullGym)
-            return second is firstHalf or secondHalf or fullGym;
-        if (second == fullGym)
-            return first is firstHalf or secondHalf;
+        var firstResources = GetLocationResources(first, firstHalf, secondHalf, fullGym);
+        var secondResources = GetLocationResources(second, firstHalf, secondHalf, fullGym);
+        return firstResources.Overlaps(secondResources);
+    }
 
-        return string.Equals(first, second, StringComparison.OrdinalIgnoreCase);
+    private static HashSet<string> GetLocationResources(string location, string firstHalf, string secondHalf, string fullGym)
+    {
+        var normalizedLocation = location.Trim();
+        if (string.Equals(normalizedLocation, fullGym, StringComparison.OrdinalIgnoreCase))
+            return new HashSet<string>([firstHalf, secondHalf], StringComparer.OrdinalIgnoreCase);
+        if (string.Equals(normalizedLocation, firstHalf, StringComparison.OrdinalIgnoreCase))
+            return new HashSet<string>([firstHalf], StringComparer.OrdinalIgnoreCase);
+        if (string.Equals(normalizedLocation, secondHalf, StringComparison.OrdinalIgnoreCase))
+            return new HashSet<string>([secondHalf], StringComparer.OrdinalIgnoreCase);
+
+        // Other venues are individual resources; the same venue cannot be booked twice at once.
+        return new HashSet<string>([normalizedLocation], StringComparer.OrdinalIgnoreCase);
     }
 
     private void ClearForm()
