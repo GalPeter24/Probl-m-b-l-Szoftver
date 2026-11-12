@@ -238,6 +238,10 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Margin="0,0,0,18">
+            <TextBlock Text="Mert Bennünk a vér..."
+                        FontSize="20"
+                        Foreground="White"
+                        Padding="0 5 5 5"/>  
             <TextBlock Text="Sportlétesítmény-foglalások"
                        FontSize="26"
                        FontWeight="Bold"
