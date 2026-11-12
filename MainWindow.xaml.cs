@@ -81,14 +81,14 @@ public partial class MainWindow : Window
     {
         if (string.IsNullOrWhiteSpace(_filePath))
         {
-            ShowError("Előbb válassz ki egy TXT-adatfájlt.", "Nincs adatfájl");
+            ShowError("Előbb válasszon ki egy TXT-adatfájlt!", "Nincs adatfájl");
             return;
         }
 
         var name = NameTextBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
-            ShowError("Add meg a foglaló nevét.", "Hiányzó adat");
+            ShowError("Adja meg a foglaló nevét!", "Hiányzó adat");
             NameTextBox.Focus();
             return;
         }
@@ -101,20 +101,20 @@ public partial class MainWindow : Window
 
         if (BookingDatePicker.SelectedDate is not DateTime date)
         {
-            ShowError("Válassz ki egy dátumot.", "Hiányzó adat");
+            ShowError("Válasszon ki egy dátumot!", "Hiányzó adat");
             return;
         }
 
         if (LocationComboBox.SelectedItem is not ComboBoxItem selectedLocation || selectedLocation.Content is not string location)
         {
-            ShowError("Válassz ki egy helyszínt.", "Hiányzó adat");
+            ShowError("Válasszon ki egy helyszínt!", "Hiányzó adat");
             return;
         }
 
         if (!TimeOnly.TryParseExact(StartTimeTextBox.Text.Trim(), "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var start)
             || !TimeOnly.TryParseExact(EndTimeTextBox.Text.Trim(), "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var end))
         {
-            ShowError("Az időpontot HH:mm formátumban add meg, például 16:30.", "Hibás időpont");
+            ShowError("Az időpontot HH:mm formátumban adja meg, például: 16:30", "Hibás időpont");
             return;
         }
 
@@ -126,11 +126,11 @@ public partial class MainWindow : Window
 
         var equipment = EquipmentOptionComboBox.SelectedIndex == 1
             ? EquipmentTextBox.Text.Trim()
-            : "Saját eszközt hoz";
+            : "Saját eszközzel érkezek";
 
         if (EquipmentOptionComboBox.SelectedIndex == 1 && string.IsNullOrWhiteSpace(equipment))
         {
-            ShowError("Írd be, milyen sporteszközt kérnek.", "Hiányzó adat");
+            ShowError("Írja be, milyen sporteszközre van szükségük!", "Hiányzó adat");
             EquipmentTextBox.Focus();
             return;
         }
@@ -187,7 +187,7 @@ public partial class MainWindow : Window
     {
         if (BookingsGrid.SelectedItem is not Foglalas selected)
         {
-            ShowError("Előbb válassz ki egy foglalást a listából.", "Nincs kijelölt foglalás");
+            ShowError("Előbb válasszon ki egy foglalást a listából!", "Nincs kijelölt foglalás");
             return;
         }
 
@@ -200,7 +200,7 @@ public partial class MainWindow : Window
             .Cast<ComboBoxItem>()
             .FirstOrDefault(item => string.Equals(item.Content?.ToString(), selected.Helyszin, StringComparison.Ordinal));
 
-        var bringsOwnEquipment = string.Equals(selected.Eszkozok, "Saját eszközt hoz", StringComparison.OrdinalIgnoreCase);
+        var bringsOwnEquipment = string.Equals(selected.Eszkozok, "Saját eszközzel érkezek", StringComparison.OrdinalIgnoreCase);
         EquipmentOptionComboBox.SelectedIndex = bringsOwnEquipment ? 0 : 1;
         EquipmentTextBox.Text = bringsOwnEquipment ? string.Empty : selected.Eszkozok;
         AddBookingButton.Content = "Módosítás mentése";
@@ -220,19 +220,19 @@ public partial class MainWindow : Window
     {
         if (string.IsNullOrWhiteSpace(_filePath))
         {
-            ShowError("Előbb válassz ki egy TXT-adatfájlt.", "Nincs adatfájl");
+            ShowError("Előbb válasszon ki egy TXT-adatfájlt!", "Nincs adatfájl");
             return;
         }
 
         if (BookingsGrid.SelectedItem is not Foglalas selected)
         {
-            ShowError("Előbb válassz ki egy foglalást a listából.", "Nincs kijelölt foglalás");
+            ShowError("Előbb válasszon ki egy foglalást a listából!", "Nincs kijelölt foglalás");
             return;
         }
 
         var result = MessageBox.Show(
             this,
-            $"Biztosan lemondod és törlöd ezt a foglalást?\n\n{selected.Nev} – {selected.Helyszin}, {selected.Datum:yyyy. MM. dd.} {selected.Kezdes}-{selected.Befejezes}",
+            $"Biztosan lemondja és törli ezt a foglalást?\n\n{selected.Nev} – {selected.Helyszin}, {selected.Datum:yyyy. MM. dd.} {selected.Kezdes}-{selected.Befejezes}",
             "Foglalás törlése",
             MessageBoxButton.YesNo,
             MessageBoxImage.Question);
@@ -358,7 +358,6 @@ public partial class MainWindow : Window
         if (string.Equals(normalizedLocation, secondHalf, StringComparison.OrdinalIgnoreCase))
             return new HashSet<string>([secondHalf], StringComparer.OrdinalIgnoreCase);
 
-        // Other venues are individual resources; the same venue cannot be booked twice at once.
         return new HashSet<string>([normalizedLocation], StringComparer.OrdinalIgnoreCase);
     }
 

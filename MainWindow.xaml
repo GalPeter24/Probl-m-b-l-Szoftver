@@ -29,7 +29,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
                     <TextBlock Text="Adatfájl" FontWeight="SemiBold" Foreground="#172033" />
-                    <TextBlock Text="Válassz TXT-fájlt a foglalások betöltéséhez és mentéséhez." Margin="0,4,0,0" FontSize="12" Foreground="#657089" />
+                    <TextBlock Text="Válasszon egy TXT-fájlt a foglalások betöltéséhez és mentéséhez." Margin="0,4,0,0" FontSize="12" Foreground="#657089" />
                 </StackPanel>
                 <TextBlock x:Name="FilePathText" Grid.Column="1" VerticalAlignment="Center" Text="Nincs kiválasztott fájl" TextTrimming="CharacterEllipsis" Foreground="#657089" Margin="0,0,16,0" />
                 <Button Grid.Column="2" Content="Fájl kiválasztása" Padding="16,9" Click="SelectFileButton_Click" />
@@ -87,7 +87,7 @@
                 <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,0,12,0">
                     <TextBlock Text="Felszerelés" Margin="0,0,0,5" Foreground="#46516A" />
                     <ComboBox x:Name="EquipmentOptionComboBox" Height="34" Padding="7,4" SelectionChanged="EquipmentOptionComboBox_SelectionChanged">
-                        <ComboBoxItem Content="Saját eszközt hozok" />
+                        <ComboBoxItem Content="Saját eszközzel érkezek" />
                         <ComboBoxItem Content="Eszközt kérek" />
                     </ComboBox>
                 </StackPanel>
@@ -121,6 +121,6 @@
             <Button Content="Kijelölt módosítása" Padding="14,8" Margin="0,0,8,0" Click="EditSelectedButton_Click" />
             <Button Content="Kijelölt lemondása / törlése" Padding="14,8" Click="DeleteSelectedButton_Click" />
         </StackPanel>
-        <TextBlock x:Name="StatusText" Grid.Row="5" Margin="2,10,0,0" Text="Válassz ki egy adatfájlt a foglalások betöltéséhez." Foreground="#657089" />
+        <TextBlock x:Name="StatusText" Grid.Row="5" Margin="2,10,0,0" Text="Válasszon ki egy adatfájlt a foglalások betöltéséhez." Foreground="#657089" />
     </Grid>
 </Window>
